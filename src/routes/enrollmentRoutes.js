@@ -9,5 +9,6 @@ const router = express.Router();
 
 router.get("/", getEnrollments);
 router.post("/", createEnrollment);
+router.post("/sync", syncEnrollments);
 
 export default router;
