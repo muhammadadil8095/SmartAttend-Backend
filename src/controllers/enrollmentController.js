@@ -1,4 +1,5 @@
 import { db } from "../prisma/db.js";
+import { syncAllEnrollments } from "../utils/enrollmentHelper.js";
 
 export const getEnrollments = async (req, res) => {
   try {
@@ -86,6 +87,23 @@ export const createEnrollment = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to create enrollment",
+    });
+  }
+};
+
+export const syncEnrollments = async (req, res) => {
+  try {
+    const result = await syncAllEnrollments();
+    return res.status(200).json({
+      success: true,
+      message: `Enrollment sync complete. Created ${result.totalEnrolled} new enrollment(s).`,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error syncing enrollments:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to sync enrollments",
     });
   }
 };
