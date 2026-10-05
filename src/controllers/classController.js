@@ -1,4 +1,5 @@
 import { db } from "../prisma/db.js";
+import { autoEnrollClass } from "../utils/enrollmentHelper.js";
 
 export const getClasses = async (req, res) => {
   try {
@@ -94,21 +95,13 @@ export const createClass = async (req, res) => {
     });
 
     // Automatically enroll all matching students into the new class
-    const students = await db.orm.public.Student.where({
-      departmentId: Number(departmentId),
-      semester: Number(semester),
-      section: String(section).trim().toUpperCase(),
-      academicYear: academicYear,
-    }).all();
-
-    for (const student of students) {
-      await syncStudentEnrollments(student);
-    }
+    const enrollmentResult = await autoEnrollClass(newClass);
 
     res.status(201).json({
       success: true,
       message: "Class created successfully",
       data: newClass,
+      enrollment: enrollmentResult,
     });
   } catch (error) {
     console.error("Error creating class:", error);
