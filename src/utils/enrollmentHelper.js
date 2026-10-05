@@ -30,10 +30,14 @@ export async function autoEnrollStudent(student, dbClient = db) {
             const clsSem = Number(cls.semester);
             const clsSec = normalizeSection(cls.section);
 
+            const clsAcademicYear = String(cls.academicYear ?? "").trim();
+            const studentAcademicYear = String(student.academicYear ?? "").trim();
+
             return (
                 clsDeptId === studentDeptId &&
                 clsSem === studentSem &&
-                clsSec === studentSec
+                clsSec === studentSec &&
+                clsAcademicYear === studentAcademicYear
             );
         });
 
@@ -55,6 +59,7 @@ export async function autoEnrollStudent(student, dbClient = db) {
                     studentId: student.id,
                     classId: cls.id,
                 });
+
                 enrolledClassIds.add(cls.id);
                 newlyEnrolledClassIds.push(cls.id);
             }
@@ -110,10 +115,14 @@ export async function autoEnrollStudents(students, dbClient = db) {
                 const clsSem = Number(cls.semester);
                 const clsSec = normalizeSection(cls.section);
 
+                const clsAcademicYear = String(cls.academicYear ?? "").trim();
+                const studentAcademicYear = String(student.academicYear ?? "").trim();
+
                 return (
                     clsDeptId === studentDeptId &&
                     clsSem === studentSem &&
-                    clsSec === studentSec
+                    clsSec === studentSec &&
+                    clsAcademicYear === studentAcademicYear
                 );
             });
 
@@ -124,6 +133,7 @@ export async function autoEnrollStudents(students, dbClient = db) {
                         studentId: student.id,
                         classId: cls.id,
                     });
+
                     enrollmentSet.add(key);
                     totalEnrolled++;
                 }
@@ -157,6 +167,7 @@ export async function autoEnrollClass(classItem, dbClient = db) {
         const clsSec = normalizeSection(classItem.section);
         const clsSem = Number(classItem.semester);
         const clsDeptId = Number(classItem.departmentId);
+        const clsAcademicYear = String(classItem.academicYear ?? "").trim();
 
         // Fetch all students matching department and semester
         const allStudents = await dbClient.orm.public.Student.all();
@@ -164,11 +175,13 @@ export async function autoEnrollClass(classItem, dbClient = db) {
             const stDeptId = Number(st.departmentId);
             const stSem = Number(st.semester);
             const stSec = normalizeSection(st.section);
+            const stAcademicYear = String(st.academicYear ?? "").trim();
 
             return (
                 stDeptId === clsDeptId &&
                 stSem === clsSem &&
-                stSec === clsSec
+                stSec === clsSec &&
+                stAcademicYear === clsAcademicYear
             );
         });
 
@@ -192,6 +205,7 @@ export async function autoEnrollClass(classItem, dbClient = db) {
                     studentId: st.id,
                     classId: classItem.id,
                 });
+
                 enrolledStudentIds.add(st.id);
                 newlyEnrolledStudentIds.push(st.id);
             }
@@ -245,10 +259,14 @@ export async function syncAllEnrollments(dbClient = db) {
                 const clsSem = Number(cls.semester);
                 const clsSec = normalizeSection(cls.section);
 
+                const clsAcademicYear = String(cls.academicYear ?? "").trim();
+                const studentAcademicYear = String(student.academicYear ?? "").trim();
+
                 return (
                     clsDeptId === studentDeptId &&
                     clsSem === studentSem &&
-                    clsSec === studentSec
+                    clsSec === studentSec &&
+                    clsAcademicYear === studentAcademicYear
                 );
             });
 
@@ -259,6 +277,7 @@ export async function syncAllEnrollments(dbClient = db) {
                         studentId: student.id,
                         classId: cls.id,
                     });
+
                     enrollmentSet.add(key);
                     totalEnrolled++;
                     missingBySemester[studentSem] =
