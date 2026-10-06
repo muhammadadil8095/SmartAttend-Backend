@@ -1,5 +1,9 @@
 import { db } from "../prisma/db.js";
-import { autoEnrollClass } from "../utils/enrollmentHelper.js";
+import {
+  autoEnrollClass,
+  normalizeAcademicYear,
+  normalizeSection,
+} from "../utils/enrollmentHelper.js";
 
 export const getClasses = async (req, res) => {
   try {
@@ -35,8 +39,7 @@ export const createClass = async (req, res) => {
       !facultyId ||
       !departmentId ||
       !semester ||
-      !section ||
-      !academicYear
+      !section
     ) {
       return res.status(400).json({
         success: false,
@@ -90,8 +93,8 @@ export const createClass = async (req, res) => {
       facultyId: Number(facultyId),
       departmentId: Number(departmentId),
       semester: Number(semester),
-      section,
-      academicYear,
+      section: normalizeSection(section),
+      academicYear: normalizeAcademicYear(academicYear),
     });
 
     // Automatically enroll all matching students into the new class

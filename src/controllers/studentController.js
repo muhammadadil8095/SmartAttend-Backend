@@ -1,6 +1,10 @@
 import { db } from "../prisma/db.js";
 import bcrypt from "bcryptjs";
-import { autoEnrollStudent } from "../utils/enrollmentHelper.js";
+import {
+  autoEnrollStudent,
+  normalizeAcademicYear,
+  normalizeSection,
+} from "../utils/enrollmentHelper.js";
 
 const getStudentIdFromUser = async (userId) => {
   const students = await db.orm.public.Student.all();
@@ -49,8 +53,7 @@ export const createStudent = async (req, res) => {
       !registerNumber ||
       !departmentId ||
       !semester ||
-      !section ||
-      !academicYear
+      !section
     ) {
       return res.status(400).json({
         success: false,
@@ -116,8 +119,8 @@ export const createStudent = async (req, res) => {
       registerNumber,
       departmentId: Number(departmentId),
       semester: Number(semester),
-      section,
-      academicYear,
+      section: normalizeSection(section),
+      academicYear: normalizeAcademicYear(academicYear),
     });
 
     // Auto-enroll student into matching classes

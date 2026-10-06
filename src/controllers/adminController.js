@@ -1,6 +1,10 @@
 import { db } from "../prisma/db.js";
 import bcrypt from "bcryptjs";
-import { autoEnrollStudent } from "../utils/enrollmentHelper.js";
+import {
+  autoEnrollStudent,
+  normalizeAcademicYear,
+  normalizeSection,
+} from "../utils/enrollmentHelper.js";
 
 export const getAdminDashboard = async (req, res) => {
   try {
@@ -214,13 +218,8 @@ export const createAdminStudent = async (req, res) => {
       registerNumber: normalizedRegisterNumber,
       departmentId: selectedDepartment.id,
       semester: semesterNumber,
-      section: section
-        ? String(section)
-            .replace(/section/i, "")
-            .trim()
-            .toUpperCase()
-        : "A",
-      academicYear: academicYear || "2026-27",
+      section: normalizeSection(section),
+      academicYear: normalizeAcademicYear(academicYear),
     });
 
     // Automatically enroll student into matching classes
